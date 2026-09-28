@@ -92,10 +92,9 @@ beforeEach(() => {
 	previousHome = process.env.HOME;
 	previousUserProfile = process.env.USERPROFILE;
 	previousEnvValues = new Map(
-		LENS_FLAGS.filter((spec) => spec.env).map((spec) => [
-			spec.env as string,
-			process.env[spec.env as string],
-		]),
+		LENS_FLAGS.flatMap((spec) => [spec.env, spec.disableEnv])
+			.filter((name): name is string => Boolean(name))
+			.map((name) => [name, process.env[name]]),
 	);
 	for (const name of previousEnvValues.keys()) delete process.env[name];
 	delete process.env.PI_LENS_CONFIG_PATH;
@@ -899,6 +898,30 @@ describe("global pi-lens config", () => {
 			expect(resolvePiLensFlagWithSource("no-lens-context", false, {})).toEqual(
 				{ value: false, source: "default" },
 			);
+		});
+
+		it("lets a disabling env boundary outrank CLI and project mutation settings", () => {
+			process.env.PI_LENS_DISABLE_MUTATIONS = "1";
+			const projectConfig = {
+				...EMPTY_PROJECT_CONFIG,
+				format: { enabled: true },
+				autofix: { enabled: true },
+				actionableWarnings: { autoFix: { enabled: true } },
+			};
+			expect(
+				resolvePiLensFlagWithSource("no-autoformat", false, undefined, projectConfig),
+			).toEqual({ value: true, source: "env" });
+			expect(
+				resolvePiLensFlagWithSource("no-autofix", false, undefined, projectConfig),
+			).toEqual({ value: true, source: "env" });
+			expect(
+				resolvePiLensFlagWithSource(
+					"lens-actionable-warning-autofix",
+					true,
+					undefined,
+					projectConfig,
+				),
+			).toEqual({ value: false, source: "env" });
 		});
 
 		it("resolvePiLensFlag delegates to resolvePiLensFlagWithSource with zero behavior change", () => {

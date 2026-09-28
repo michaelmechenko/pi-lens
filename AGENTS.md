@@ -475,8 +475,10 @@ ADR: docs/adr/0009-reported-path-attribution.md
   adopt it without adding another merge implementation.
 - Canonical config is `.pi-lens.json` plus `~/.pi-lens/config.json`; locations,
   legacy migrations, and namespaces live in the config-location/schema modules.
-  A new config key or environment flag needs a forcing function, stability tier,
-  diagnostic code, tests, and docs.
+  `PI_LENS_DISABLE_MUTATIONS=1` is the hard operator boundary for every automatic
+  format/autofix/quickfix path and outranks project re-enablement. A new config key
+  or environment flag needs a forcing function, stability tier, diagnostic code,
+  tests, and docs.
 - `lens_diagnostics` has one model-facing diagnostic surface. `source` is
   `session` or `lsp`; `scope` is `paths` or `workspace`; explicit paths always
   win. Severity is a threshold. Retired compatibility names must not widen a

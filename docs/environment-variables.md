@@ -13,11 +13,10 @@ tier sits in a different place depending on what the variable controls:
 - **Path / directory overrides** (`PILENS_DATA_DIR`, `PI_LENS_HOME`,
   `PI_LENS_CONFIG_PATH`) have no CLI or config-key equivalent, so the env var is
   the only surface.
-- **The registry-bound toggle** (`PI_LENS_NO_CONTEXT_INJECTION`) resolves through
-  the flag registry, where **env is the highest tier** — it outranks both the
-  `--no-lens-context` CLI flag and the `contextInjection.enabled` config key
-  (`clients/lens-config.ts` resolution order: `env → cli → project → global →
-  default`).
+- **The registry-bound toggle** (`PI_LENS_NO_CONTEXT_INJECTION`) and the hard
+  mutation disable (`PI_LENS_DISABLE_MUTATIONS`) resolve where **env is the
+  highest tier**. The mutation disable outranks CLI, project, nested-project,
+  and global mutation settings.
 - **Scale / limit knobs** (`PI_LENS_MAX_PROJECT_FILES` and friends) sit *between*
   the matching `config.json` value and the built-in default — the config value
   wins when present, else the env var, else the default. A few are outright
@@ -154,6 +153,15 @@ Set to `1` to skip auto-installing language servers. Off by default.
 
 Set to `1` to skip auto-installing managed tools (formatters, linters,
 scanners). Off by default.
+
+## Mutation control
+
+### `PI_LENS_DISABLE_MUTATIONS`
+
+Set to `1` to hard-disable automatic formatting, deterministic autofix, and
+actionable-warning quickfixes. This outranks project and nested-project config,
+so a repository cannot re-enable those mutation hooks. Diagnostics, LSP
+synchronization, and explicit preview tools remain available.
 
 ## Context injection
 

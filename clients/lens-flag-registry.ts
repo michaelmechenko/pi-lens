@@ -46,6 +46,8 @@ export interface LensFlagSpec {
 	scope: LensFlagScope;
 	/** Env var that forces the flag on when set to `"1"`. Outranks the CLI. */
 	env?: string;
+	/** Env var that forces the underlying capability off. Outranks every tier. */
+	disableEnv?: string;
 	/**
 	 * Escape hatch for the one flag whose config key is not a boolean
 	 * (`format.mode`). Returns undefined when the key is absent.
@@ -80,6 +82,7 @@ export const LENS_FLAGS: readonly LensFlagSpec[] = [
 		negated: true,
 		default: false,
 		scope: "project",
+		disableEnv: "PI_LENS_DISABLE_MUTATIONS",
 	},
 	{
 		name: "immediate-format",
@@ -105,6 +108,7 @@ export const LENS_FLAGS: readonly LensFlagSpec[] = [
 		negated: true,
 		default: false,
 		scope: "project",
+		disableEnv: "PI_LENS_DISABLE_MUTATIONS",
 	},
 	{
 		name: "no-tests",
@@ -205,6 +209,7 @@ export const LENS_FLAGS: readonly LensFlagSpec[] = [
 		negated: false,
 		default: false,
 		scope: "project",
+		disableEnv: "PI_LENS_DISABLE_MUTATIONS",
 	},
 	{
 		name: "lens-actionable-warning-all",

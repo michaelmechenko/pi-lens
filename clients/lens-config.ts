@@ -560,6 +560,9 @@ export function resolvePiLensFlagWithSource(
 	projectRoot?: string,
 ): ResolvedPiLensFlag {
 	const spec = getLensFlagSpec(name);
+	if (spec?.disableEnv && process.env[spec.disableEnv] === "1") {
+		return { value: spec.negated, source: "env" };
+	}
 	if (spec?.env && process.env[spec.env] === "1") {
 		return { value: true, source: "env" };
 	}
